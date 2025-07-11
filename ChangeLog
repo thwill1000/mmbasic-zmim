@@ -3,6 +3,7 @@ ChangeLog
 
 Version 3.6.3 - 2-Nov-2026:
  - Added *FONT LARGE.
+ - Added --version command-line option.
  - Fixed crash on PicoMite when no audio configured (untested).
  - Miscellaneous fixes by Peter Mather:
    - Fixed bug in random number generation that caused lowest and highest
