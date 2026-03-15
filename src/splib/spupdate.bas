@@ -1,8 +1,8 @@
 #!/usr/local/bin/mmbasic
 
-' Copyright (c) 2023 Thomas Hugo Williams
+' Copyright (c) 2023-2025 Thomas Hugo Williams
 ' License MIT <https://opensource.org/licenses/MIT>
-' For MMB4L 0.6.0
+' For MMBasic 6.00
 
 ' Updates contents of 'splib' directory from current contents of
 ' git@github.com:thwill1000/mmbasic-sptools.git - 'master' branch.
@@ -18,7 +18,7 @@ Option Default Integer
 Const TMP_SPTOOLS_DIR$ = sys.TMPDIR$() + "/sptools"
 Const GIT_REPOSITORY$ = "git@github.com:thwill1000/mmbasic-sptools.git"
 
-Dim cmd$, out%(256), status%
+Dim cmd$, cmdout%(256), status%
 
 ' There must be an 'splib/' directory.
 If Not file.exists%("splib", "dir") Then Error "'splib' directory not found"
@@ -54,14 +54,14 @@ cmd$ = "find <src> -maxdepth 1 -type f -execdir cp '{}' <dst> ';'"
 cmd$ = str.replace$(cmd$, "'", Chr$(34))
 cmd$ = str.replace$(cmd$, "<src>", src$)
 cmd$ = str.replace$(cmd$, "<dst>", dst$)
-System cmd$, out%(), status%
+System cmd$, cmdout%(), status%
 If status% Then Error cmd$ + " failed with code " + Str$(status%)
 
 ' Get SHA-256 for HEAD of sptools repository
 cmd$ = "(cd " + TMP_SPTOOLS_DIR$ + " && git rev-parse HEAD)"
-System cmd$, out%(), status%
+System cmd$, cmdout%(), status%
 If status% Then Error cmd$ + " failed with code " + Str$(status%)
-Const sha256$ = LGetStr$(out%(), 1, 12)
+Const sha256$ = LGetStr$(cmdout%(), 1, 12)
 
 ' Add and commit update to the git repository.
 ? "Updating local git repository"

@@ -1,6 +1,6 @@
 ' Copyright (c) 2020-2025 Thomas Hugo Williams
 ' License MIT <https://opensource.org/licenses/MIT>
-' For MMBasic 5.07
+' For MMBasic 6.00
 
 '!if !defined(NO_INCLUDE_GUARDS)
 On Error Skip 1 : Dim sys.VERSION = -1
@@ -29,9 +29,12 @@ Function file.count_files%(d$, pattern$, type$)
 
   Local f$
   Select Case LCase$(type$)
-    Case "all"      : f$ = Dir$(d$ + "/*", All)
-    Case "dir"      : f$ = Dir$(d$ + "/*", Dir)
-    Case "file", "" : f$ = Dir$(d$ + "/*", File)
+    Case "all"
+      f$ = Dir$(d$ + "/*", All)
+    Case "dir"
+      f$ = Dir$(d$ + "/*", Dir)
+    Case "file", ""
+      f$ = Dir$(d$ + "/*", File)
     Case Else
       file.count_files% = sys.error%(sys.FAILURE, "Invalid file type '" + type$ + "'")
       Exit Function
@@ -343,15 +346,15 @@ End Function
 
 ' Gets the files in directory d$ whose names match pattern$.
 '
-' @param       d$        directory to process.
-' @param       pattern$  file pattern to match on, e.g. "*.bas".
-' @param       type$     type of files to return: "dir", "file" or "all".
-' @param[out]  out$()    the names of matching files are copied into this array.
-'                        If there are too many matching files then this array
-'                        will be incomplete, but the returned number of files
-'                        will be correct.
-' @return                the number of files matching the pattern.
-Function file.get_files%(d$, pattern$, type$, out$())
+' @param       d$         directory to process.
+' @param       pattern$   file pattern to match on, e.g. "*.bas".
+' @param       type$      type of files to return: "dir", "file" or "all".
+' @param[out]  onames$()  the names of matching files are copied into this array.
+'                         If there are too many matching files then this array
+'                         will be incomplete, but the returned number of files
+'                         will be correct.
+' @return                 the number of files matching the pattern.
+Function file.get_files%(d$, pattern$, type$, onames$())
   If Not file.is_directory%(d$) Then
     file.get_files% = sys.error%(sys.FAILURE, "Not a directory '" + d$ + "'")
     Exit Function
@@ -359,9 +362,12 @@ Function file.get_files%(d$, pattern$, type$, out$())
 
   Local f$
   Select Case LCase$(type$)
-    Case "all"      : f$ = Dir$(d$ + "/*", All)
-    Case "dir"      : f$ = Dir$(d$ + "/*", Dir)
-    Case "file", "" : f$ = Dir$(d$ + "/*", File)
+    Case "all"
+      f$ = Dir$(d$ + "/*", All)
+    Case "dir"
+      f$ = Dir$(d$ + "/*", Dir)
+    Case "file", ""
+      f$ = Dir$(d$ + "/*", File)
     Case Else
       file.get_files% = sys.error%(sys.FAILURE, "Invalid file type '" + type$ + "'")
       Exit Function
@@ -370,14 +376,14 @@ Function file.get_files%(d$, pattern$, type$, out$())
   Local i% = Mm.Info(Option Base)
   Do While f$ <> ""
     If file.fnmatch%(pattern$, f$) Then
-      If i% <= Bound(out$(), 1) Then out$(i%) = f$ : Inc i%
+      If i% <= Bound(onames$(), 1) Then onames$(i%) = f$ : Inc i%
       Inc file.get_files%
     EndIf
     f$ = Dir$()
   Loop
 
   If file.get_files% > 0 Then
-    Sort out$(), , &b10, Mm.Info(Option Base), i% - Mm.Info(Option Base)
+    Sort onames$(), , &b10, Mm.Info(Option Base), i% - Mm.Info(Option Base)
   EndIf
 End Function
 

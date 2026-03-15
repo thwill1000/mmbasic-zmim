@@ -1,6 +1,6 @@
-' Copyright (c) 2021-2023 Thomas Hugo Williams
+' Copyright (c) 2021-2025 Thomas Hugo Williams
 ' License MIT <https://opensource.org/licenses/MIT>
-' For MMBasic 5.07
+' For MMBasic 6.00
 
 ' MD5 algorithm from https://en.wikipedia.org/wiki/MD5
 ' XXTEA algorithm from https://en.wikipedia.org/wiki/XXTEA
@@ -16,18 +16,19 @@ If sys.err$ <> "" Then Error sys.err$
 ' Calculates the MD5 hash of bytes held in a buffer.
 '
 ' To calculate the MD5 hash of a string s$:
-'   ok% = crypt.md5%(Peek(VarAddr s$) + 1, Len(s$), out%())
+'   ok% = crypt.md5%(Peek(VarAddr s$) + 1, Len(s$), md5%())
 '
 ' To calculate the MD5 hash of a long string ls%():
-'   ok% = crypt.md5%(Peek(VarAddr ls%()) + 8, LLen(ls%()), out%())
+'   ok% = crypt.md5%(Peek(VarAddr ls%()) + 8, LLen(ls%()), md5%())
 '
-' @param  ad%     address of the buffer.
-' @param  size%   number of bytes to process.
-' @param  out%()  on return the MD5 hash in little-endian format (2 elements = 16 bytes = 128-bits)
-' @return         1 on success, 0 on failure, see sys.err$ for details of failure.
-Function crypt.md5%(ad%, size%, out%())
+' @param       ad%      address of the buffer.
+' @param       size%    number of bytes to process.
+' @param[out]  omd5%()  on return the MD5 hash in little-endian format
+'                       (2 elements = 16 bytes = 128-bits)
+' @return               1 on success, 0 on failure, see sys.err$ for details of failure.
+Function crypt.md5%(ad%, size%, omd5%())
 
-  If Bound(out%(), 1) - Bound(out%(), 0) <> 1 Then Error "out%() should have 2 elements"
+  If Bound(omd5%(), 1) - Bound(omd5%(), 0) <> 1 Then Error "omd5%() should have 2 elements"
 
   Local block%(array.new%(64))
   Const b_addr% = Peek(VarAddr block%())
@@ -66,8 +67,8 @@ Function crypt.md5%(ad%, size%, out%())
   Loop While num% = 64
 
   Const BASE% = Mm.Info(Option Base)
-  out%(BASE%)     = h%(BASE%)     Or h%(BASE% + 1) << 32
-  out%(BASE% + 1) = h%(BASE% + 2) Or h%(BASE% + 3) << 32
+  omd5%(BASE%)     = h%(BASE%)     Or h%(BASE% + 1) << 32
+  omd5%(BASE% + 1) = h%(BASE% + 2) Or h%(BASE% + 3) << 32
   crypt.md5% = 1
 
 End Function
@@ -86,12 +87,13 @@ End Function
 
 ' Calculates the MD5 hash of a file.
 '
-' @param  fd%     file-descriptor for a file Open For Input.
-' @param  out%()  on return the MD5 hash in little-endian format (2 elements = 16 bytes = 128-bits)
-' @return         1 on success, 0 on failure, see sys.err$ for details of failure.
-Function crypt.md5_file%(fd%, out%())
+' @param       fd%      file-descriptor for a file Open For Input.
+' @param[out]  omd5%()  on return the MD5 hash in little-endian format
+'                       (2 elements = 16 bytes = 128-bits)
+' @return               1 on success, 0 on failure, see sys.err$ for details of failure.
+Function crypt.md5_file%(fd%, omd5%())
 
-  If Bound(out%(), 1) - Bound(out%(), 0) <> 1 Then Error "out%() should have 2 elements"
+  If Bound(omd5%(), 1) - Bound(omd5%(), 0) <> 1 Then Error "omd5%() should have 2 elements"
 
   Local block%(array.new%(64))
   Const b_addr% = Peek(VarAddr block%())
@@ -129,8 +131,8 @@ Function crypt.md5_file%(fd%, out%())
   Loop While num% = 64
 
   Const BASE% = Mm.Info(Option Base)
-  out%(BASE%)     = h%(BASE%)     Or h%(BASE% + 1) << 32
-  out%(BASE% + 1) = h%(BASE% + 2) Or h%(BASE% + 3) << 32
+  omd5%(BASE%)     = h%(BASE%)     Or h%(BASE% + 1) << 32
+  omd5%(BASE% + 1) = h%(BASE% + 2) Or h%(BASE% + 3) << 32
   crypt.md5_file% = 1
 
 End Function
