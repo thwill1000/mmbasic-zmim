@@ -1,6 +1,6 @@
-' Copyright (c) 2019-2025 Thomas Hugo Williams
+' Copyright (c) 2019-2026 Thomas Hugo Williams
 ' License MIT <https://opensource.org/licenses/MIT>
-' For MMBasic 6.00
+' For MMBasic 6
 
 '!if !defined(NO_INCLUDE_GUARDS)
 On Error Skip 1 : Dim sys.VERSION = -1
@@ -743,6 +743,9 @@ Function ex_font(cmd$)
         ex_font = E_OK
       Case "medium"
         con.set_font(1)
+        ex_font = E_OK
+      Case "large"
+        con.set_font(4)
         ex_font = E_OK
       Case Else
         con.println("Unknown font.")
