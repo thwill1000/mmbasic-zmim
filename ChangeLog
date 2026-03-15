@@ -1,6 +1,10 @@
 ChangeLog
 ---------
 
+Version 3.7.0 - 15-Mar-2026:
+ - Added *FONT LARGE.
+ - Fixed crash on PicoMite when no audio configured (untested).
+
 Version 3.6.2 - 8-Jul-2025:
  - Fixed crash when status line too long.
 
