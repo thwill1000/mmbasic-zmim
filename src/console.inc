@@ -269,7 +269,9 @@ End Sub
 
 Sub con.bell()
   Local type% = con.get_type%()
-  If type% And con.SCREEN% Then Play Tone 329.63, 329.63, 100 ' Note E4
+  If type% And con.SCREEN% Then
+    If sys.has_audio%() Then Play Tone 329.63, 329.63, 100 ' Note E4
+  EndIf
   If type% And con.SERIAL% Then
     con.set_type(con.SERIAL%)
     Print Chr$(7);
