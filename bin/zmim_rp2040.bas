@@ -1,15 +1,15 @@
-' Transpiled on 08-07-2025 20:35:13
+' Transpiled on 19-03-2026 20:48:13
 ' Copyright (c) 2019-2025 Thomas Hugo Williams
 ' License MIT <https://opensource.org/licenses/MIT>
 Option Base 0
 Option Default Integer
 Option Explicit On
+Const VERSION=306303
 If InStr(Mm.Device$,"PicoMite") Then
  If Mm.Ver<6.0 Then Error "PicoMite firmware v6.0 or later required"
 EndIf
-If Mm.Device$="MMB4L" Then Option Resolution Pixel
 ' src/splib/system.inc ++++
-' Copyright (c) 2020-2025 Thomas Hugo Williams
+' Copyright (c) 2020-2026 Thomas Hugo Williams
 ' License MIT <https://opensource.org/licenses/MIT>
 On Error Skip
 xyz_not_declared%=1
@@ -26,15 +26,43 @@ Const sys.FAILURE=-1
 Dim sys.break_flag%
 Dim sys.err$
 
-Function sys.HOME$()
- Select Case Mm.Info$(Device X)
-  Case "MMB4L"
-   sys.HOME$=Mm.Info$(EnvVar "HOME")
-  Case "MMBasic for Windows"
-   sys.HOME$=Mm.Info$(EnvVar "HOMEDIR")+Mm.Info$(EnvVar "HOMEPATH")
-  Case Else
-   sys.HOME$="A:"
+Function sys.format_version$(v%)
+ Const v_%=Choice(v%,v%,sys.VERSION)
+ Local s$=Str$(v_%\10^5)+"."+Str$((v_% Mod 10^5)\10^3)
+ Select Case v_% Mod 1000
+  Case <100 : Cat s$," alpha "+Str$(v_% Mod 1000)
+  Case <200 : Cat s$," beta "+Str$((v_% Mod 1000)-100)
+  Case <300 : Cat s$," RC "+Str$((v_% Mod 1000)-200)
+  Case Else : Cat s$,"."+Str$((v_% Mod 1000)-300)
  End Select
+ sys.format_version$=s$
+End Function
+
+Function sys.is_windows%()
+ If Mm.Device$="MMB4L" Then
+  sys.is_windows%=(Mm.Info$(Arch)="Windows x86_64")
+ Else
+  sys.is_windows%=(Mm.Device$="MMBasic for Windows")
+ EndIf
+End Function
+
+Sub sys.normalize_separators(path$)
+ Local i%
+ For i%=1 To Len(path$)
+  If Peek(Var path$,i%)=Asc("\") Then Poke Var path$,i%,Asc("/")
+ Next
+End Sub
+
+Function sys.HOME$()
+ If sys.is_windows%() Then
+  sys.HOME$=Mm.Info$(EnvVar "USERPROFILE")
+  If sys.HOME$="" Then sys.HOME$=Mm.Info$(EnvVar "HOMEDIR")+Mm.Info$(EnvVar "HOMEPATH")
+  sys.normalize_separators(sys.HOME$)
+ ElseIf Mm.Info$(Device X)="MMB4L" Then
+  sys.HOME$=Mm.Info$(EnvVar "HOME")
+ Else
+  sys.HOME$="A:"
+ EndIf
 End Function
 
 Function sys.SEPARATOR$()
@@ -60,6 +88,16 @@ Sub sys.run_shell(fnbr%)
  Const prog$=sys.read_shell_file$(1,fnbr%)
  If prog$<>"" Then Run prog$
 End Sub
+
+Function sys.has_audio%()
+ If Mm.Info(Device X)="MMB4L" Then
+  sys.has_audio%=1
+ Else If InStr(Mm.Device$,"PicoMite") Then
+  sys.has_audio%=Mm.Info$(Option Audio)<>"NONE"
+ Else
+  sys.has_audio%=1
+ EndIf
+End Function
 
 Function file.exists%(f$,type$)
  Local f_$=Choice(Len(f$),f$,"."),i%
@@ -602,7 +640,7 @@ Sub con.println(s$,center)
 End Sub
 
 Sub con.print_file(f$,center)
- Local s$,w
+ Local p,s$,w
  If center Then
   Open f$ For Input As #1
   Do
@@ -614,6 +652,10 @@ Sub con.print_file(f$,center)
  Open f$ For Input As #1
  Do
   Line Input #1,s$
+  p=InStr(s$,"${version}")
+  If p Then
+   s$=Left$(s$,p-1)+sys.format_version$(VERSION)+Mid$(s$,p+Len("${version}"))
+  EndIf
   If center Then
    con.println(s$+Space$(w-Len(s$)),center)
   Else
@@ -647,7 +689,9 @@ End Sub
 
 Sub con.bell()
  Local type%=con.get_type%()
- If type% And con.SCREEN% Then Play Tone 329.63,329.63,100
+ If type% And con.SCREEN% Then
+  If sys.has_audio%() Then Play Tone 329.63,329.63,100
+ EndIf
  If type% And con.SERIAL% Then
   con.set_type(con.SERIAL%)
   Print Chr$(7);
@@ -1094,7 +1138,7 @@ End Sub
 
 ' ---- src/objects.inc
 ' src/execute.inc ++++
-' Copyright (c) 2019-2025 Thomas Hugo Williams
+' Copyright (c) 2019-2026 Thomas Hugo Williams
 ' License MIT <https://opensource.org/licenses/MIT>
 Const E_OK=0
 Const E_UNKNOWN=1
@@ -1618,6 +1662,9 @@ Function ex_font(cmd$)
     ex_font=E_OK
    Case "medium"
     con.set_font(1)
+    ex_font=E_OK
+   Case "large"
+    con.set_font(4)
     ex_font=E_OK
    Case Else
     con.println("Unknown font.")
