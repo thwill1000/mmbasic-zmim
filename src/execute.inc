@@ -678,9 +678,12 @@ Sub ex_show_status(on_console%)
     End Select
     s$(1) = "Time: " + Str$(hours% Mod 13) + ":" + Str$(mins%, 2, 0, "0") + Choice(am%, "am", "pm")
   Else
+    Option Log Debug
+    Breakpoint
     s$(1) = "Score: " + Str$(vget(&h11)) + ", Moves: " + Str$(vget(&h12))
-  EndIf
-
+    Option Log Info
+EndIf
+  
   If on_console% Then
     con.println(s$(0) + ", " + s$(1))
     con.println

@@ -5,6 +5,7 @@
 Option Base 0
 Option Default Integer
 Option Explicit On
+Option Log Debug
 
 Const VERSION = 306303 ' 3.6.3
 
