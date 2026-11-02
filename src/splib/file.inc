@@ -589,5 +589,10 @@ End Function
 
 ' Resolves a file against a given parent.
 Function file.resolve$(parent$, f$)
-  file.resolve$ = parent$ + file.SEPARATOR + f$
+  Select Case Right$(parent$, 1)
+  Case "/", "\"
+    file.resolve$ = Left$(parent$, Len(parent$) - 1) + file.SEPARATOR + f$
+  Case Else
+    file.resolve$ = parent$ + file.SEPARATOR + f$
+  End Select
 End Function

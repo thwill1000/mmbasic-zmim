@@ -7,6 +7,8 @@ Version 3.6.3 - 2-Nov-2026:
  - Miscellaneous fixes by Peter Mather:
    - Fixed bug in random number generation that caused lowest and highest
      values of range to be returned half as often.
+   - Fixed bug in filename used by *SCREENSHOT meta-command when run from
+     filesystem root directory.
 
 Version 3.6.2 - 8-Jul-2025:
  - Fixed crash when status line too long.
