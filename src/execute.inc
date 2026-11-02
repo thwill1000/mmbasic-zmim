@@ -647,7 +647,7 @@ Function ex_random(range)
 
   x = (a * x + c) Mod m
 
-  ex_random = 1 + CInt((range - 1) * (x / m))
+  ex_random = 1 + Int(range * (x / m))
 End Function
 
 ' @param  on_console%  If 1 then as well as updating the status line also write
