@@ -3,7 +3,7 @@ A Z-machine interpreter for playing the classic Infocom works of interactive fic
 
 Written in MMBasic v6.00 for the [Colour Maximite 2](http://geoffg.net/maximite.html), [PicoMite VGA/HDMI](https://geoffg.net/picomitevga.html), [PicoCalc](https://www.clockworkpi.com/picocalc), [MMBasic for Linux](https://github.com/thwill1000/mmb4l) and MMBasic for Windows.
 
-Copyright (c) 2019-2025 Thomas Hugo Williams
+Copyright (c) 2019-2026 Thomas Hugo Williams
 * Z-machine technical advice was provided by Fredrik Ramsberg, co-author of [Ozmoo](https://github.com/johanberntsson/ozmoo).
 * PicoCalc testing by Chris Stoddard.
 
@@ -81,7 +81,7 @@ The interpreter provides a number of internal meta-commands all prefixed with a 
  - `*font [small | medium]`
      - Changes the font size.
      - Defaults to `medium`.
-     - __KNOWN BUG__: using *FONT SMALL on the Colour Maximite 2 causes the prompt to "glitch" in a way I have been unable to reproduce in a small example.
+     - __KNOWN ISSUE__: using *FONT SMALL on Colour Maximite 2 firmware earlier than v7.0 causes the prompt to "glitch".
  - `*more [on | off]`
      - `on`: enables output paging so that a `[MORE]` prompt is shown whenever more output than can be shown on a single screen is generated; this is only likely to happen when replaying a script, see `*replay` below.
      - `off`: disables output paging.
