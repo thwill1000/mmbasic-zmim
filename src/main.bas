@@ -1,4 +1,4 @@
-' Copyright (c) 2019-2025 Thomas Hugo Williams
+' Copyright (c) 2019-2026 Thomas Hugo Williams
 ' License MIT <https://opensource.org/licenses/MIT>
 ' For MMBasic 6.00
 
@@ -6,11 +6,11 @@ Option Base 0
 Option Default Integer
 Option Explicit On
 
+Const VERSION = 306303 ' 3.6.3
+
 If InStr(Mm.Device$, "PicoMite") Then
   If Mm.Ver < 6.0 Then Error "PicoMite firmware v6.0 or later required"
 EndIf
-
-If Mm.Device$ = "MMB4L" Then Option Resolution Pixel
 
 '!if defined(LOW_MEMORY)
   '!replace "memory.inc" "memory_virtual.inc"
@@ -83,6 +83,11 @@ If Mm.Device$ = "MMB4L" Then Option Resolution Pixel
 #Include "debug.inc"
 '!endif
 
+If get_cmdline_option$("version") = "1" Then
+  Print "Z-MIM v" + sys.format_version$(VERSION)
+  End
+EndIf
+
 ' ss$ is for string "constants" that I don't want to take up 256 bytes on the
 ' micro-controller devices.
 If InStr(Mm.Info(Device X), "PicoMite") Then
@@ -103,7 +108,7 @@ Const SCRIPT_DIR = 3
 Const STORY_DIR = 4
 Const STORY_FILE = 5
 
-If InStr(Mm.CmdLine$, "--shell") Then
+If get_cmdline_option$("shell") = "1" Then
   Option Break 4
   On Key 3, end_game()
 EndIf
@@ -240,10 +245,28 @@ Function get_install_dir$()
 End Function
 
 Sub end_game()
-  If InStr(Mm.CmdLine$, "--shell") Then
+  If get_cmdline_option$("shell") = "1" Then
     Option Break 3
     Pause 2000
     sys.run_shell()
   EndIf
   End
 End Sub
+
+Function get_cmdline_option$(option$)
+  Local i = 1, s$
+  Do
+    s$ = Field$(Mm.CmdLine$, i, " ", Chr$(34))
+    Select Case s$
+      Case ""
+        Exit Do
+      Case "--shell", "-shell"
+        If option$ = "shell" Then get_cmdline_option$ = "1"
+      Case "--version", "-version", "-v"
+        If option$ = "version" Then get_cmdline_option$ = "1"
+      Case Else
+        Error "Unknown command line option: " + s$
+    End Select
+    Inc i
+  Loop
+End Function
