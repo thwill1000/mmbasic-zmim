@@ -1,4 +1,4 @@
-' Copyright (c) 2019-2025 Thomas Hugo Williams
+' Copyright (c) 2019-2026 Thomas Hugo Williams
 ' License MIT <https://opensource.org/licenses/MIT>
 ' For MMBasic 6.00
 
@@ -8,8 +8,11 @@ Option Default Integer
 #Include "../splib/system.inc"
 #Include "../splib/string.inc"
 #Include "../splib/vt100.inc"
-#Include "../execute.inc"
+#Include "../splib/file.inc"
 #Include "../console.inc"
+#Include "../script.inc"
+#Include "../objects.inc"
+#Include "../execute.inc"
 
 Dim i, buckets(40), x, y
 
